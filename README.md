@@ -15,7 +15,7 @@ Baoding-Electricity-Tracker是一个基于Python编写的自动化程序，能�
 1. 修改配置文件 `config.ini` ，填入自己的账号密码、通知配置、[飞书](https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot)和[ServerChan](https://sct.ftqq.com/sendkey)的密钥。
 2. 运行 `app.py` 文件，启动Web服务器。
 3. 访问 `http://localhost:5000/electricity` 接口，获取最新的电费数据。
-4. 也可以单独执行main.py文件，这将不会有定时任务和API的功能。
+4. 也可以单独执行`main.py`文件，这将不会有定时任务和API的功能。
 5. 设定好通知时间、阈值等，程序将按照这些配置进行工作。
 
 ## 项目依赖
