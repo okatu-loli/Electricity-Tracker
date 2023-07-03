@@ -1,0 +1,27 @@
+[Credentials]
+; 账号
+username =
+; 密码
+password =
+
+[Notification]
+; 是否启用通知(总开关)
+enable_notify =
+; 是否启用定时任务
+enable_timing =
+; 是否启用每次执行都发一次通知
+enable_exec_notify =
+; 可选平台：feishu 或 serverchan
+platform =
+; 设定的阈值(单位：元)
+threshold = 100
+; 设定的通知时间
+time = 12:00:00
+
+[ServerChan]
+; Server酱发送密钥
+send_key = your_serverchan_send_key
+
+[Feishu]
+; 飞书机器人token
+robot_token = your_feishu_send_key
