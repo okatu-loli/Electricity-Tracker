@@ -19,7 +19,7 @@ Baoding-Electricity-Tracker是一个基于Python编写的自动化程序，能�
 5. 设定好通知时间、阈值等，程序将按照这些配置进行工作。
 
 ## 项目依赖
-Python3.10
+Python3.10  
 依赖安装：
 ```bash
 pip install -r requirements.txt
