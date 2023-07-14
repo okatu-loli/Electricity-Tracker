@@ -3,6 +3,7 @@ import ddddocr
 import requests
 import json
 import configparser
+import paho.mqtt.client as mqtt
 from playwright.sync_api import Playwright, sync_playwright
 
 ocr = ddddocr.DdddOcr()
@@ -41,23 +42,40 @@ def run(pw: Playwright, nop: str, nom: int) -> None:
     if enable_notify == 'true':
         if amount < nom:
             message = f"当前电费低于阈值：{amount}元"
-            if nop == 'serverchan':
-                send_notification_serverchan(message)
-            elif nop == 'feishu':
-                send_notification_feishu(message)
+            send_notifications(nop, amount, message)
 
     enable_exec_notify = config.get("Notification", "enable_exec_notify")
     if enable_notify == 'true':
         if enable_exec_notify == 'true':
-            if nop == 'serverchan':
-                send_notification_serverchan(f"今日电费：{amount}")
-            elif nop == 'feishu':
-                send_notification_feishu(f"今日电费：{amount}")
+            message = f"当前电费：{amount}元"
+            send_notifications(nop, amount, message)
+            
 
     page.close()
     context.close()
     browser.close()
 
+
+def send_notifications(nop, amount, message):
+    # 判断platform有无逗号，切割后根据不同的设置调用不同的方法,如果无逗号，直接运行对应方法
+    nops = nop.split(',') if ',' in nop else [nop]
+    # 遍历通知方式列表，根据不同的设置调用不同的方法
+    for notification in nops:
+        #    message = f"今日电费：{amount}"
+       if notification == 'mqtt':
+           send_notification_mqtt(amount)
+       elif notification == 'feishu':
+           send_notification_feishu(message)
+       elif notification == 'serverchan':
+           send_notification_serverchan(message)
+
+# 用MQTT发送通知
+def send_notification_mqtt(message):
+    client = mqtt.Client()
+    client.connect(config.get('MQTT', 'mqtt_host'),
+                   int(config.get('MQTT', 'mqtt_port')), 60)
+    client.publish(config.get('MQTT', 'mqtt_topic'), message)
+    client.disconnect()
 
 def send_notification_serverchan(message):
     url = f"https://sctapi.ftqq.com/{config.get('ServerChan', 'send_key')}.send"
