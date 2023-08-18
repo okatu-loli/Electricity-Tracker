@@ -68,6 +68,39 @@ def send_notifications(nop, amount, message):
            send_notification_feishu(message)
        elif notification == 'serverchan':
            send_notification_serverchan(message)
+       elif notification == 'webhook':
+           send_notification_webhook(amount, message)
+
+"""
+可以用 Webhook 直接发送到 Home Assistant
+Home Assisistant 中的 sensor 参考配置如下
+- trigger:
+    - platform: webhook
+      webhook_id: {your_webhook_id}
+      local_only: false
+      allowed_methods:
+        - POST
+  sensor:
+    - name: "Current Electricity Bill"
+      unique_id: Tei9S161spDNZDP7
+      state: "{{ trigger.json.amount }}"
+    - name: "Current Electricity Message"
+      unique_id: k0q0GTHrWcczneHw
+      state: "{{ trigger.json.msg }}"
+"""
+def send_notification_webhook(amt, msg):
+    url = config.get('Webhook', 'webhook_url')
+    headers = {'Content-Type': 'application/json'}
+    payload = {
+        'amount': amt,
+        'message': msg
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(payload))
+    if response.status_code == 200:
+        print('通知已发送')
+    else:
+        print('发送通知失败')
+
 
 # 用MQTT发送通知
 def send_notification_mqtt(message):
@@ -76,6 +109,7 @@ def send_notification_mqtt(message):
                    int(config.get('MQTT', 'mqtt_port')), 60)
     client.publish(config.get('MQTT', 'mqtt_topic'), message)
     client.disconnect()
+
 
 def send_notification_serverchan(message):
     url = f"https://sctapi.ftqq.com/{config.get('ServerChan', 'send_key')}.send"
