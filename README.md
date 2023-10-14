@@ -30,6 +30,11 @@ pip install -r requirements.txt
 
 目前这个问题已经被第三方开发者修复，我们正在等待原作者合并PR。
 
+# 待办事项列表
+
+- [ ] 适配 Bark
+- [ ] 编写青龙脚本
+
 ## 更新日志：
 2023.07.14:  
 添加MQTT支持，实现多渠道消息推送，详见PR [#1](https://github.com/okatu-loli/Baoding-Electricity-Tracker/pull/1) 感谢[@sunshinenny](https://github.com/sunshinenny)
