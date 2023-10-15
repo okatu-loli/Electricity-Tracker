@@ -5,16 +5,10 @@ username =
 password =
 
 [Notification]
-; 是否启用通知(总开关)
-enable_notify =
 ; 是否启用定时任务
-enable_timing =
-; 是否启用每次执行都发一次通知
-enable_exec_notify =
-; 可选平台：feishu, serverchan 或 mqtt,多个平台启用用逗号隔开
-platform = serverchan,mqtt,webhook
-; 设定的阈值(单位：元)
-threshold = 100
+enable_timing = true
+; 可选平台：feishu, serverchan, mqtt, webhook, bark。多个平台启用时用逗号隔开
+platform =
 ; 设定的通知时间
 time = 12:00:00
 
@@ -28,10 +22,14 @@ robot_token = your_feishu_send_key
 
 [Webhook]
 ; Webhook URL
-webhook_url = your_webhook_url(example: https://example.duckdns.org:8123/api/webhook/95598_GNeCe3aIYrjA9yvb)
+webhook_url =
 
 [MQTT]
 ; Mqtt的地址
 mqtt_host = your_mqtt_host(example: 127.0.0.1 or mqtt.com)
 mqtt_port = your_mqtt_port(example: 1883)
 mqtt_topic = your_mqtt_topic(example: /me/electricity)
+
+[Bark]
+url =
+token =
