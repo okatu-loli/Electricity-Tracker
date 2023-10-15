@@ -21,5 +21,5 @@ RUN chmod a+x app.py main.py
 
 EXPOSE 5000
 
-CMD [ "python" "app.py" ]
+CMD ["/usr/bin/python", "app.py"]
 
