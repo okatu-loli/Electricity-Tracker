@@ -1,4 +1,5 @@
 import time
+import os
 import ddddocr
 import requests
 import json
@@ -156,8 +157,13 @@ if __name__ == "__main__":
     config = configparser.ConfigParser()
     config.read('config.ini', encoding='utf-8')
 
-    username = config.get('Credentials', 'username')
-    password = config.get('Credentials', 'password')
+    username = os.getenv('ELECTRICITY_USER')
+    password = os.getenv('ELECTRICITY_PASS')
+    if username == None:
+        username = config.get('Credentials', 'username')
+    
+    if password == None:
+        password = config.get('Credentials', 'password')
 
     notification_platform = config.get('Notification', 'platform')
     notification_threshold = int(config.get('Notification', 'threshold'))
