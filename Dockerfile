@@ -16,7 +16,7 @@ RUN pip3 install -i https://mirrors.aliyun.com/pypi/simple/ --no-cache-dir sched
 RUN playwright install && playwright install-deps
 
 COPY config.ini ./config.ini
-COPY main.py app.py ./
+COPY . ./
 RUN chmod a+x app.py main.py
 
 EXPOSE 5000
