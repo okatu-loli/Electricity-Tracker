@@ -23,7 +23,6 @@ class Main:
             notifier.send(amount,message)
 
     def run(self):
-        print("fetchdata: ")
         amount = self.scraper.fetch_data()
         self.notify(amount)
 
