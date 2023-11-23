@@ -4,6 +4,7 @@ import scraper.slider_image_process as sip
 
 from playwright.sync_api import sync_playwright
 
+
 class ElectricityScraper:
     def __init__(self, config):
         print("初始化 ElectricityScraper")
@@ -78,7 +79,7 @@ class ElectricityScraper:
             return amount
 
     # Todo:不通过硬盘检测
-    def loading_slide(self, timeout = 10):
+    def loading_slide(self, timeout=10):
         """等待验证码图片加载"""
         while True:
             self.page.locator("canvas").nth(0).screenshot(path='slide.png')

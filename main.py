@@ -1,3 +1,5 @@
+import time
+
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from config.config import ConfigManager
@@ -17,11 +19,20 @@ class Main:
     def notify(self, amount):
         message = f"当前电费：{amount}元"
         for notifier in self.notifiers:
-            notifier.send(amount,message)
+            notifier.send(amount, message)
 
-    def run(self):
-        amount = self.scraper.fetch_data()
-        self.notify(amount)
+    def run(self, retry_times=3, retry_interval=60):
+        for i in range(retry_times):
+            try:
+                amount = self.scraper.fetch_data()
+                self.notify(amount)
+                break
+            except Exception as err:
+                if i < retry_times - 1:
+                    print(f'Try {i+1} failed, error: {err}. Wait for {retry_interval} seconds before next try.')
+                    time.sleep(retry_interval)
+                else:
+                    print(f'Try {i+1} failed, error: {err}. No more tries.')
 
 
 if __name__ == "__main__":
