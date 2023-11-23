@@ -15,12 +15,12 @@ class ElectricityScraper:
     def fetch_data(self):
         with sync_playwright() as pw:
             print("尝试启动浏览器")
-            browser = pw.chromium.launch(
+            self.browser = pw.chromium.launch(
                 # executable_path='C:\\Users\\ZeLin\\AppData\\Local\\ms-playwright\\chromium-1084\\chrome-win\\chrome.exe',
                 headless=True)
             print("浏览器启动完成")
-            context = browser.new_context(viewport={'width': 1920, 'height': 1080})
-            self.page = context.new_page()
+            self.context = self.browser.new_context(viewport={'width': 1920, 'height': 1080})
+            self.page = self.context.new_page()
 
             self.page.goto("https://www.95598.cn/osgweb/login")
             self.page.locator(".user").click()
@@ -65,11 +65,15 @@ class ElectricityScraper:
                 print(f"今日电费：{amount}")
             except:
                 self.page.screenshot(path='debug.png', full_page=True)
+
+                self.page.close()
+                self.context.close()
+                self.browser.close()
                 raise TimeoutError("Authentication or network error")
 
             self.page.close()
-            context.close()
-            browser.close()
+            self.context.close()
+            self.browser.close()
 
             return amount
 
@@ -85,6 +89,9 @@ class ElectricityScraper:
 
             timeout -= 1
             if timeout <= 0:
+                self.page.close()
+                self.context.close()
+                self.browser.close()
                 raise TimeoutError("Timeout in wait slide image")
 
     def move_slide(self, distance):
