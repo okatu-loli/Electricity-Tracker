@@ -44,7 +44,10 @@ if __name__ == "__main__":
         hour, minute, second = map(int, notification_time.split(":"))
 
         scheduler = BlockingScheduler()
-        scheduler.add_job(main_instance.run, 'interval', hours=24, start_date=f'2023-10-14 {hour}:{minute}:{second}')
+        scheduler.add_job(main_instance.run(retry_times=int(main_instance.config.get("Retry", "retry_times")),
+                                            retry_interval=int(main_instance.config.get("Retry", "retry_interval"))),
+                          'interval', hours=24, start_date=f'2023-10-14 {hour}:{minute}:{second}')
         scheduler.start()
     else:
-        main_instance.run()
+        main_instance.run(retry_times=int(main_instance.config.get("Retry", "retry_times")),
+                          retry_interval=int(main_instance.config.get("Retry", "retry_interval")))
