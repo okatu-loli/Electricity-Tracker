@@ -1,6 +1,8 @@
-# Baoding-Electricity-Tracker
+<img src="https://github.com/okatu-loli/Baoding-Electricity-Tracker/assets/53247097/77e06c3d-d2c2-4ade-b386-5acd15b034af" width=512px/>
 
-Baoding-Electricity-Tracker是一个基于Python编写的自动化程序，能够帮助用户查询河北省保定市的每日电费，理论支持查询全国的电费，同时支持通过飞书和ServerChan等平台发送电费通知。
+# Electricity-Tracker
+
+Electricity-Tracker是一个基于Python编写的自动化程序，能够帮助用户查询每日电费，理论支持查询全国的电费，同时支持通过飞书和ServerChan等平台发送电费通知。
 
 **项目已恢复，功能可正常使用**
 **欢迎加入QQ群交流：361997678**
