@@ -47,13 +47,14 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.read('config.ini', encoding='utf-8')
 
-    time = config.get('Notification', 'time')
+    _time = config.get('Notification', 'time')
 
     # 设定每天定时执行run_main函数
-    schedule.every().day.at(f"{time}").do(run_main)
+    schedule.every().day.at(f"{_time}").do(run_main)
 
     # 创建并启动线程，用于运行schedule
     t = Thread(target=run_schedule)
     t.start()
 
+    run_main()
     app.run(host='0.0.0.0', port=5000)
