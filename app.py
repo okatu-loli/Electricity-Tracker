@@ -1,17 +1,25 @@
 import configparser
-import subprocess
 import time
 from threading import Thread
 
 import schedule
 from flask import Flask
 
+from main import Main
+
 app = Flask(__name__)
 
 
 def run_main():
-    subprocess.run(['python', 'main.py'])
-    print("main.py 执行成功")
+    config = configparser.ConfigParser()
+    config.read('config.ini', encoding='utf-8')
+    retry_times = int(config.get('Retry', 'retry_times'))
+    retry_interval = int(config.get('Retry', 'retry_interval'))
+
+    main = Main()
+    amount = main.run(retry_times=retry_times, retry_interval=retry_interval)
+    with open('electricity.txt', 'w') as file:
+        file.write(str(amount))
 
 
 @app.route('/')
@@ -21,9 +29,12 @@ def index():
 
 @app.route('/electricity')
 def get_electricity():
-    with open('electricity.txt', 'r') as file:
-        amount = file.read()
-    return amount
+    try:
+        with open('electricity.txt', 'r') as file:
+            amount = file.read()
+        return amount
+    except Exception as e:
+        return {"error": str(e)}, 500
 
 
 def run_schedule():
