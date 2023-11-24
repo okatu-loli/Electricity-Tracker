@@ -1,9 +1,25 @@
+import logging
+import os
 import random
 import time
+from datetime import date
+
 import scraper.slider_image_process as sip
 
 from playwright.sync_api import sync_playwright
 
+ROOT_DIRECTORY = os.path.dirname("../")
+FILE_NAME = f'{date.today()}_log.txt'  # 将每天的日期加入到日志文件名中
+LOG_DIRECTORY = os.path.join(ROOT_DIRECTORY, 'logs')
+
+# 检查并创建 logs 文件夹
+if not os.path.exists(LOG_DIRECTORY):
+    os.makedirs(LOG_DIRECTORY)
+
+LOG_FILE_PATH = os.path.join(LOG_DIRECTORY, FILE_NAME)
+
+logging.basicConfig(filename=LOG_FILE_PATH, level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
 
 class ElectricityScraper:
     def __init__(self, config):

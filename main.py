@@ -1,10 +1,7 @@
 import time
-
-from apscheduler.schedulers.blocking import BlockingScheduler
-
+from scraper.electricity_scraper import ElectricityScraper
 from config.config import ConfigManager
 from notifier import NotifierFactory
-from scraper.electricity_scraper import ElectricityScraper
 
 
 class Main:
@@ -26,28 +23,17 @@ class Main:
             try:
                 amount = self.scraper.fetch_data()
                 self.notify(amount)
-                break
+                return amount
             except Exception as err:
                 if i < retry_times - 1:
-                    print(f'Try {i+1} failed, error: {err}. Wait for {retry_interval} seconds before next try.')
+                    print(f'尝试 {i + 1}次 失败，错误：{err}。 等待 {retry_interval}秒后再次尝试。')
                     time.sleep(retry_interval)
                 else:
-                    print(f'Try {i+1} failed, error: {err}. No more tries.')
+                    print(f'尝试 {i + 1}次 失败，错误: {err}。 无更多尝试。')
 
 
 if __name__ == "__main__":
     main_instance = Main()
-
-    enable_timing = main_instance.config.get("Notification", "enable_timing")
-    if enable_timing.lower() == "true":
-        notification_time = main_instance.config.get("Notification", "time")
-        hour, minute, second = map(int, notification_time.split(":"))
-
-        scheduler = BlockingScheduler()
-        scheduler.add_job(main_instance.run(retry_times=int(main_instance.config.get("Retry", "retry_times")),
-                                            retry_interval=int(main_instance.config.get("Retry", "retry_interval"))),
-                          'interval', hours=24, start_date=f'2023-10-14 {hour}:{minute}:{second}')
-        scheduler.start()
-    else:
-        main_instance.run(retry_times=int(main_instance.config.get("Retry", "retry_times")),
-                          retry_interval=int(main_instance.config.get("Retry", "retry_interval")))
+    retry_times = int(main_instance.config.get("Retry", "retry_times"))
+    retry_interval = int(main_instance.config.get("Retry", "retry_interval"))
+    print(main_instance.run(retry_times=retry_times, retry_interval=retry_interval))
