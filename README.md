@@ -1,4 +1,4 @@
-<img src="https://github.com/okatu-loli/Baoding-Electricity-Tracker/assets/53247097/77e06c3d-d2c2-4ade-b386-5acd15b034af" width=512px/>
+<img src="https://github.com/okatu-loli/Baoding-Electricity-Tracker/assets/53247097/77e06c3d-d2c2-4ade-b386-5acd15b034af" width=512px/ alt="logo">
 
 # Electricity-Tracker
 
@@ -15,12 +15,29 @@ Electricity-Tracker是一个基于Python编写的自动化程序，能够帮助�
 - **多平台支持**：目前支持飞书和ServerChan两种通知方式，未来可能会支持更多平台。
 
 ## 使用方法
-
-1. 重命名 `config.ini.example` 改为  `config.ini` ，根据注释修改配置文件。
-2. 运行 `app.py` 文件，启动Web服务器。
-3. 访问 `http://localhost:5000/electricity` 接口，获取最新的电费数据。
+本项目有两种部署方式，选择其一部署即可：
+### 本地部署
+1. 克隆本项目到本地
+2. 重命名 `config.ini.example` 改为  `config.ini` ，根据注释修改配置文件。
+3. 运行 `app.py` 文件，启动Web服务器。
 4. 也可以单独执行`main.py`文件，这将不会有定时任务和API的功能。
-5. 设定好通知时间、阈值等，程序将按照这些配置进行工作。
+
+### Docker部署、
+1. 拉取Docker镜像
+    ```bash
+    docker pull okatuloli/electricity-tracker
+    ```
+2. 运行Docker容器，并将本地的配置文件挂载到容器内
+    ```bash
+    docker run -v /path/to/config.ini:/usr/src/app/config.ini -p 5000:5000 okatuloli/electricity-tracker 
+    ```
+    **请注意，你需要将 /path/to/config.ini 这部分改为你实际的 config.ini 文件路径。**
+
+## 使用方法
+
+发起 HTTP 请求到以下URL来使用该服务:
+- `GET http://localhost:5000/electricity`: 获取最新的电费数据。
+- `POST http://localhost:5000/getelectricity`: 强制检查电费并更新到数据库。
 
 ## 项目依赖
 Python3.10  
@@ -40,13 +57,6 @@ pip install -r requirements.txt
 
 2023.08.19:  
 增加Webhook支持，详见 [#2](https://github.com/okatu-loli/Baoding-Electricity-Tracker/pull/2) 感谢[@marvyn](https://github.com/marvyn)
-
-## 相关链接：
-- [ddddocr requirements](https://github.com/sml2h3/ddddocr/blob/master/ddddocr/requirements.txt)
-- [Pillow deprecations](https://pillow.readthedocs.io/en/stable/deprecations.html#constants)
-- [ddddocr Pull Request #126](https://github.com/sml2h3/ddddocr/pull/126)
-
-
 
 ## 开源许可证
 
