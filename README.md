@@ -22,7 +22,7 @@ Electricity-Tracker是一个基于Python编写的自动化程序，能够帮助�
 3. 运行 `app.py` 文件，启动Web服务器。
 4. 也可以单独执行`main.py`文件，这将不会有定时任务和API的功能。
 
-### Docker部署、
+### Docker部署
 1. 拉取Docker镜像
     ```bash
     docker pull okatuloli/electricity-tracker
