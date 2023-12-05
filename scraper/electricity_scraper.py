@@ -32,7 +32,7 @@ class ElectricityScraper:
         with sync_playwright() as pw:
             logging.info("尝试启动浏览器")
             self.browser = pw.chromium.launch(
-                executable_path='C:\\Users\\ZeLin\\AppData\\Local\\ms-playwright\\chromium-1084\\chrome-win\\chrome.exe',
+                # executable_path='C:\\Users\\ZeLin\\AppData\\Local\\ms-playwright\\chromium-1084\\chrome-win\\chrome.exe',
                 headless=True)
             logging.info("浏览器启动完成")
             self.context = self.browser.new_context(viewport={'width': 1920, 'height': 1080})
