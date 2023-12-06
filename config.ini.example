@@ -13,10 +13,18 @@ platform =
 time = 12:00:00
 
 [Retry]
+; 页面加载超时时间，单位：秒
+page_timeout = 10
+; 验证码加载超时时间，单位：秒
+slide_timeout = 10
 ; 重试次数
 retry_times = 4
 ; 重试间隔时间，单位：秒
-retry_interval = 90
+retry_interval = 5
+; 每次页面加载超时增加时长，单位：秒
+page_timeout_addition = 5
+; 每次验证码加载超时增加时长，单位：秒
+slide_timeout_addition = 5
 
 [ServerChan]
 ; Server酱发送密钥
@@ -39,3 +47,6 @@ mqtt_topic = your_mqtt_topic(example: /me/electricity)
 [Bark]
 url =
 token =
+
+[DEBUG]
+debug = 0
