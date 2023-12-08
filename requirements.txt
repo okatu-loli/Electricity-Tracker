@@ -38,5 +38,5 @@ sympy==1.12
 typing_extensions==4.8.0
 tzdata==2023.3
 tzlocal==5.1
-urllib3==2.0.6
+urllib3==2.1.0
 Werkzeug==3.0.0
