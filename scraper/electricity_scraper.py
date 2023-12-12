@@ -4,6 +4,7 @@ import logging
 import os
 import random
 import time
+import re
 
 import scraper.slider_image_process as sip
 
@@ -32,22 +33,22 @@ class ElectricityScraper:
         with sync_playwright() as pw:
             logging.info("尝试启动浏览器")
             self.browser = pw.chromium.launch(
-                # executable_path='C:\\Users\\ZeLin\\AppData\\Local\\ms-playwright\\chromium-1084\\chrome-win\\chrome.exe',
                 headless=True)
             logging.info("浏览器启动完成")
             self.context = self.browser.new_context(viewport={'width': 1920, 'height': 1080})
             self.page = self.context.new_page()
 
+            logging.info("正在加载登录页面...")
             self.page.goto("https://www.95598.cn/osgweb/login")
             self.page.locator(".user").click()
             self.page.get_by_placeholder("请输入用户名/手机号/邮箱").fill(self.username)
             self.page.get_by_placeholder("请输入密码").fill(self.password)
-
             self.page.get_by_role("button", name="登录").click()
             self.debug_save_img("login")
             logging.info("登录页面加载完成")
 
             # 抓取验证码数据
+            logging.info("等待验证码图片加载...")
             self.loading_slide(self.slide_timeout * 2)
             self.page.wait_for_selector('canvas')
             self.slide_bg_img = self.page.evaluate("() => document.querySelector('canvas').toDataURL('image/png')")
@@ -62,19 +63,106 @@ class ElectricityScraper:
             self.move_slide(distance)
             logging.info("滑块移动完成")
 
+            logging.info("等待页面加载...")
             self.loading_page(self.page_timeout * 2)
             logging.info("页面加载完成")
 
+            self.page.get_by_role("button", name="切换用户").click()
+            count = self.page.locator(".el-dropdown-menu__item").count()
+            self.page.get_by_role("button", name="切换用户").click()
+            logging.info("绑定的户号数量 %s", count)
 
-            while self.page.locator(".cff8").nth(0).get_by_text('元').inner_text()[:-1] == "--":
-                logging.info(f"正在尝试获取值...")
+            output = ""
+            if count <= 1:
+                number, amount = self.get_data()
+                output += f"{number}:{amount}"
+            else:
+                temp = self.page.locator(".content-name").inner_text()
+                for i in range(count):
+                    self.page.get_by_role("button", name="切换用户").click()
+                    time.sleep(0.5)
+                    self.page.locator(".el-dropdown-menu__item").nth(i).click()
+                    # time.sleep(2)
+                    if i > 0:
+                        while temp == self.page.locator(".content-name").inner_text():
+                            time.sleep(0.1)
+                    # number, amount = self.get_data(self.page)
+                    while self.page.locator(".cff8").get_by_text('元').inner_text(timeout=5000)[:-1] == "--":
+                        time.sleep(1)
+                    amount = float(self.page.locator(".cff8").get_by_text('元').inner_text()[:-1])
+                    user_no = self.page.get_by_text("用电户号").inner_text()
+                    number = re.findall(r'\d+', user_no)[0]
+                    # print(f"用户户号：{number}")
+                    # print(f"电费余额：{amount}")
+
+                    output += f"{number}:{amount}"
+                    if i < count - 1:
+                        output += ";"
+                logging.info(output)
+            
+            logging.info(f"正在尝试获取值...")
+            while self.page.locator(".cff8").nth(0).get_by_text('元').inner_text()[:-1] == "--":           
                 time.sleep(0.5)
             amount = float(self.page.locator(".cff8").nth(0).get_by_text('元').inner_text()[:-1])
+            user_no = self.page.get_by_text("用电户号").inner_text()
             logging.info(f"获取到值：{amount}")
+
+            # playwright codegen https://www.95598.cn/osgweb/login
+            # 获取总用电量
+            logging.info("正在加载总用电量页面...")
+            # self.page.goto("https://www.95598.cn/osgweb/electricityCharge")
+            self.page.get_by_role("link", name="电量电费查询").click()
+            time.sleep(1)
+            # page.get_by_placeholder("请选择").click()
+            self.page.locator(".el-select > .el-input").first.click()
+            count = self.page.locator(".el-select-dropdown__item").count()
+            self.page.locator(".el-select > .el-input").first.click()
+
+            output = ""
+            if count <= 1:
+                number, amount = self.get_data()
+                output += f"{number}:{amount}"
+            else:
+                for i in range(count):
+                    self.page.locator(".el-select > .el-input").first.click()
+                    element = self.page.locator(".el-select-dropdown__item").nth(i)
+                    time.sleep(0.5)
+                    if not element.is_visible():
+                        self.page.locator(".el-select > .el-input").first.click()
+                        continue
+                    element.click()
+
+                    while self.page.locator(".total").get_by_text('年电量累计').inner_text(timeout=5000)[:-1] == "--":
+                        time.sleep(1)
+                    
+                    tempstr = self.page.locator(".total").get_by_text('年电量累计').inner_text()
+                    arry = tempstr.split('\n')
+                    totalkw = f"{arry[1]}:{arry[0]}"
+
+                    tempstr = self.page.locator(".total").get_by_text('年电费累计').inner_text()
+                    arry = tempstr.split('\n')
+                    totalmoney = f"{arry[1]}:{arry[0]}"
+
+                    user_no = self.page.locator(".righ").nth(0).inner_text()
+                    output += f"{user_no} {totalkw} {totalmoney}"
+
+                    if i < count - 1:
+                        output += ";"
+                logging.info(output)
 
             self.debug_save_img("page")
             self.close()
             return amount
+
+    def get_data(self):
+        while self.page.locator(".cff8").get_by_text('元').inner_text(timeout=5000)[:-1] == "--":
+            time.sleep(1)
+        amount = float(self.page.locator(".cff8").get_by_text('元').inner_text()[:-1])
+        user_no = self.page.get_by_text("用电户号").inner_text()
+        number = re.findall(r'\d+', user_no)[0]
+        print(f"用户户号：{number}")
+        print(f"今日电费：{amount}")
+        return number, amount
 
     def loading_slide(self, timeout, intervals = 0.5):
         """等待验证码图片加载"""
@@ -84,7 +172,7 @@ class ElectricityScraper:
             if not sip.is_monochrome(memory_file):
                 break
             time.sleep(intervals)
-            logging.info("等待验证码图片加载...")
+            # logging.info("等待验证码图片加载...")
 
             timeout -= 1
             if timeout <= 0:
@@ -110,7 +198,7 @@ class ElectricityScraper:
                 self.close()
                 raise TimeoutError("验证错误")
 
-            logging.info("等待页面加载...")
+            # logging.info("等待页面加载...")
 
             timeout -= 1
             if timeout <= 0:
