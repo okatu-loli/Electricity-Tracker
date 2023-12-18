@@ -57,11 +57,9 @@ def run_main():
     # 如果日期不同，则执行 main 函数
     config = configparser.ConfigParser()
     config.read('config.ini', encoding='utf-8')
-    retry_times = int(config.get('Retry', 'retry_times'))
-    retry_interval = int(config.get('Retry', 'retry_interval'))
 
     main = Main()
-    amount = main.run(retry_times=retry_times, retry_interval=retry_interval)
+    amount = main.run()
 
     # 将新的记录插入数据库
     try:

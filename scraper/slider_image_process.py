@@ -5,9 +5,9 @@ import numpy as np
 
 from PIL import Image
 
-def is_monochrome(imagePath: str):
+def is_monochrome(image):
     """从路径检验纯色图片"""
-    image = Image.open(imagePath)
+    image = Image.open(image)
     pixels = list(image.getdata())
     return all(pixel == pixels[0] for pixel in pixels)
 
