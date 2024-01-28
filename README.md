@@ -4,7 +4,7 @@
 
 Electricity-Tracker是一个基于Python编写的自动化程序，能够帮助用户查询每日电费，理论支持查询全国的电费，同时支持通过飞书和ServerChan等平台发送电费通知。
 
-**项目已恢复，功能可正常使用**
+**因为一些积重难返的问题，项目主线暂停开发，并正在使用go语言重构，开发进度可以查看[go](https://github.com/okatu-loli/Electricity-Tracker/tree/go)分支**
 **欢迎加入QQ群交流：361997678**
 ## 功能介绍
 
