@@ -7,14 +7,11 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
-	"sync"
 	"time"
 )
 
 // 单页面浏览器对象
 var page chromium.Chromium
-
-var threadPool sync.WaitGroup
 
 func main() {
 	startTime := time.Now()
