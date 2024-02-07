@@ -50,6 +50,20 @@ func (chromium *Chromium) DomSetInspectedNode(nodeId int) {
 	_, _ = chromium.SendMethod("DOM.setInspectedNode", param)
 }
 
+func (chromium *Chromium) DomSearchCount(query string) int {
+	param := struct {
+		Query string `json:"query"`
+	}{Query: query}
+	result := struct {
+		ResultCount int `json:"resultCount"`
+	}{}
+	err := chromium.ExecuteMethod("DOM.performSearch", param, &result)
+	if err != nil {
+		return -1
+	}
+	return result.ResultCount
+}
+
 func (chromium *Chromium) DomSearch(query string) []int {
 	paramsPerformSearch := struct {
 		Query string `json:"query"`

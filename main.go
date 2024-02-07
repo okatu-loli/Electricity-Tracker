@@ -43,7 +43,10 @@ func main() {
 	}
 
 	log.Println("执行滑块验证")
-	_ = doSlider(captchaData)
+	err := doSlider(captchaData)
+	if err != nil {
+		return
+	}
 	log.Println("滑块验证结束")
 
 	var keyCode Decrypt_95598.KeyCodeHeader
@@ -53,14 +56,38 @@ func main() {
 	_ = Decrypt_95598.DecryptData(keyCode, msg, nil)
 	plainText, _ = Decrypt_95598.ParseDecryptData(msg, keyCode.KeyCode)
 	log.Println(string(plainText))
-	// 电费使用量
-	msg, _ = page.WaitUrlRequestResponse("https://www.95598.cn/api/osg-open-bc0001/member/c05/f01", &keyCode, nil)
-	plainText, _ = Decrypt_95598.ParseDecryptData(msg, keyCode.KeyCode)
-	log.Println(string(plainText))
-	// 历史每月用电量
-	msg, _ = page.WaitUrlRequestResponse("https://www.95598.cn/api/osg-open-bc0001/member/c01/f02", &keyCode, nil)
-	plainText, _ = Decrypt_95598.ParseDecryptData(msg, keyCode.KeyCode)
-	log.Println(string(plainText))
+
+	var userNum int
+	var userCount int
+	multiUser := false
+	singleUser := true
+	for multiUser || singleUser {
+		// 电费使用量
+		msg, _ = page.WaitUrlRequestResponse("https://www.95598.cn/api/osg-open-bc0001/member/c05/f01", &keyCode, nil)
+		plainText, _ = Decrypt_95598.ParseDecryptData(msg, keyCode.KeyCode)
+		log.Println(string(plainText))
+		// 历史每月用电量
+		msg, _ = page.WaitUrlRequestResponse("https://www.95598.cn/api/osg-open-bc0001/member/c01/f02", &keyCode, nil)
+		plainText, _ = Decrypt_95598.ParseDecryptData(msg, keyCode.KeyCode)
+		log.Println(string(plainText))
+
+		if singleUser {
+			page.DomSetInspectedNode(page.DomGetDocument()["BODY"])
+			userNum = page.DomSearchCount("#dropdown-menu-9293 > li")
+			if userNum >= 2 {
+				multiUser = true
+				userCount = 2
+			}
+			singleUser = false
+		}
+		if multiUser {
+			page.DoClick("#dropdown-menu-9293 > li:nth-child(" + strconv.Itoa(userCount) + ")")
+			userCount++
+			if userCount > userNum {
+				multiUser = false
+			}
+		}
+	}
 
 	endTime := time.Now()
 	log.Printf("执行时间: %s\n", endTime.Sub(startTime))
